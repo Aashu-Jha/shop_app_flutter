@@ -9,8 +9,7 @@ class CartItem extends StatelessWidget {
   final double price;
   final int quantity;
 
-
-  CartItem({this.title,this.productID, this.id, this.price, this.quantity});
+  CartItem({this.title, this.productID, this.id, this.price, this.quantity});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,8 @@ class CartItem extends StatelessWidget {
       key: Key(id),
       background: Container(
         color: Theme.of(context).errorColor,
-        child: Icon(Icons.delete,
+        child: Icon(
+          Icons.delete,
           color: Colors.white,
           size: 30.0,
         ),
@@ -31,26 +31,26 @@ class CartItem extends StatelessWidget {
         Provider.of<Cart>(context, listen: false).removeItem(productID);
       },
       confirmDismiss: (direction) {
-        return showDialog(context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('Are you Sure'),
-            content: Text('Do you want to remove this item?'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop(true);
-                },
-                child: Text('Yes'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop(false);
-                },
-                child: Text('No'),
-              ),
-            ],
-          )
-        );
+        return showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text('Are you Sure'),
+                  content: Text('Do you want to remove this item?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop(true);
+                      },
+                      child: Text('Yes'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop(false);
+                      },
+                      child: Text('No'),
+                    ),
+                  ],
+                ));
       },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
@@ -59,7 +59,7 @@ class CartItem extends StatelessWidget {
             padding: const EdgeInsets.all(5.0),
             child: CircleAvatar(
               child: Padding(
-                padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(4),
                   child: FittedBox(child: Text('\$$price'))),
             ),
           ),
