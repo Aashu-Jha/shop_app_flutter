@@ -98,6 +98,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
       Navigator.of(context).pop();
     }else {
+      //ALTERNATIVE OF ASYNC OR AWAIT-
+      //example of .then() and catchError() function of Future Class
+      //then function works after only previous call are completed included catchError
+      //catch Error works to see if any error occurs
       Provider.of<Products>(
           context, listen: false).addProducts(
           _editedProduct).catchError((error) {

@@ -52,6 +52,9 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
+  //implementation of Future class and it's methods
+  //.then() and .catchError()
+  //These are alternatives of async and await
   Future<void> addProducts(Product product) {
     const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json';
     return http.post(url, body: json.encode(
