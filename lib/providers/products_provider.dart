@@ -59,4 +59,24 @@ class Products with ChangeNotifier {
     _items.add(newProduct);
     notifyListeners();
   }
+
+  void updateProducts(String id, Product updatedProduct) {
+    final idx = _items.indexWhere((element) => element.id == id);
+    if(idx >= 0) {
+      _items[idx] = updatedProduct;
+      notifyListeners();
+    }else{
+      print('Can\'t find index!!');
+    }
+  }
+
+  void deleteProducts(String id) {
+    final idx = _items.indexWhere((element) => element.id == id);
+    if(idx >= 0) {
+      _items.removeAt(idx);
+      notifyListeners();
+    }else{
+      print('Can\'t find index!!');
+    }
+  }
 }

@@ -16,12 +16,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlNode = FocusNode();
   final _imageUrlController = TextEditingController();  //controller for imageUrl to use for previewing image
   var _editedProduct = Product(id: null, title: '', description: '', price: 0, imageUrl: ''); //a blank product object
-  
+
+  var _isInit = true;
+  var _initValues = {
+    'title' : '',
+    'description' : '',
+    'price' : '',
+    'imageUrl' : ''
+  };
+
   @override
   void initState() {
     //whenever the _updateImageFocusNode changes it will listen the changes, it is generally using for imagePreview
     _imageUrlNode.addListener(_updateImageFocusNode);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(_isInit) {
+      final productID = ModalRoute.of(context).settings.arguments as String;
+      if (productID != null) {
+        _editedProduct = Provider.of<Products>(context, listen: false).findById(productID);
+        _initValues = {
+          'title' : _editedProduct.title,
+          'description' : _editedProduct.description,
+          'price' : _editedProduct.price.toString(),
+          'imageUrl' : '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -57,7 +85,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final bool isValid = _form.currentState.validate();
     if(!isValid) return;
     _form.currentState.save();
-    Provider.of<Products>(context, listen: false).addProducts(_editedProduct);
+    if(_editedProduct.id != null) {
+      Provider.of<Products>(context, listen: false).updateProducts(_editedProduct.id, _editedProduct);
+    }else
+      Provider.of<Products>(context, listen: false).addProducts(_editedProduct);
     Navigator.of(context).pop();
   }
 
@@ -79,6 +110,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _initValues['title'],
                 decoration: InputDecoration(
                   labelText: 'Title',
                   labelStyle: TextStyle(
@@ -97,7 +129,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       title: value,
                       description: _editedProduct.description,
                       price: _editedProduct.price,
-                      imageUrl: _editedProduct.imageUrl);
+                      imageUrl: _editedProduct.imageUrl,
+                      isFavorite: _editedProduct.isFavorite,
+                  );
                 },
                 validator: (value) {
                   if(value.isEmpty) {
@@ -107,6 +141,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValues['price'].toString(),
                 decoration: InputDecoration(
                 labelText: 'Price',
                   labelStyle: TextStyle(
@@ -123,6 +158,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   //we have to change the whole object because we have declared the class variables as final
                   _editedProduct = Product(
                       id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       title: _editedProduct.title,
                       description: _editedProduct.description,
                       price: double.parse(value),
@@ -142,6 +178,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValues['description'],
                 decoration: InputDecoration(
                 labelText: 'Description',
                   labelStyle: TextStyle(
@@ -155,6 +192,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   //we have to change the whole object because we have declared the class variables as final
                   _editedProduct = Product(
                       id: _editedProduct.id,
+                      isFavorite: _editedProduct.isFavorite,
                       title: _editedProduct.title,
                       description: value,
                       price: _editedProduct.price,
@@ -200,6 +238,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         //we have to change the whole object because we have declared the class variables as final
                         _editedProduct = Product(
                             id: _editedProduct.id,
+                            isFavorite: _editedProduct.isFavorite,
                             title: _editedProduct.title,
                             description: _editedProduct.description,
                             price: _editedProduct.price,
