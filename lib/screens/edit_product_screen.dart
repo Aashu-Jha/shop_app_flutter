@@ -12,11 +12,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _priceNode = FocusNode();
   final _descriptionNode = FocusNode();
   final _imageUrlNode = FocusNode();
-  final _imageUrlController = TextEditingController();
-  var _editedProduct = Product(id: null, title: '', description: '', price: 0, imageUrl: '');
+  final _imageUrlController = TextEditingController();  //controller for imageUrl to use for previewing image
+  var _editedProduct = Product(id: null, title: '', description: '', price: 0, imageUrl: ''); //a blank product object
   
   @override
   void initState() {
+    //whenever the _updateImageFocusNode changes it will listen the changes, it is generally using for imagePreview
     _imageUrlNode.addListener(_updateImageFocusNode);
     super.initState();
   }
@@ -31,6 +32,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.dispose();
   }
 
+  // when the image is empty it will set the state to show empty preview
   void _updateImageFocusNode() {
     if(!_imageUrlNode.hasFocus) {
       setState(() {
@@ -65,9 +67,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
+                  //when user pressed next in keyboard the focus will set to _pricedNode point
                   Focus.of(context).requestFocus(_priceNode);
                 },
                 onSaved: (value) {
+                  //we have to change the whole object because we have declared the class variables as final
                   _editedProduct = Product(
                       id: _editedProduct.id,
                       title: value,
@@ -90,6 +94,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Focus.of(context).requestFocus(_descriptionNode);
                 },
                 onSaved: (value) {
+                  //we have to change the whole object because we have declared the class variables as final
                   _editedProduct = Product(
                       id: _editedProduct.id,
                       title: _editedProduct.title,
@@ -109,6 +114,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
                 onSaved: (value) {
+                  //we have to change the whole object because we have declared the class variables as final
                   _editedProduct = Product(
                       id: _editedProduct.id,
                       title: _editedProduct.title,
@@ -144,6 +150,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         _saveForm();
                       },
                       onSaved: (value) {
+                        //we have to change the whole object because we have declared the class variables as final
                         _editedProduct = Product(
                             id: _editedProduct.id,
                             title: _editedProduct.title,
