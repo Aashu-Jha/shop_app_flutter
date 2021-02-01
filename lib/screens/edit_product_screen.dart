@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_app/providers/product.dart';
+import 'package:shop_app/providers/products_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = 'edit_product_screen';
@@ -34,7 +36,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   // when the image is empty it will set the state to show empty preview
   void _updateImageFocusNode() {
-    if(!_imageUrlNode.hasFocus) {
+    if (!_imageUrlNode.hasFocus) {
+      if (!_imageUrlController.text.startsWith('http') &&
+          !_imageUrlController.text.startsWith('https')) {
+        return;
+      }
+      if ((!_imageUrlController.text.endsWith('.png') &&
+          !_imageUrlController.text.endsWith('.jpg') &&
+          !_imageUrlController.text.endsWith('.jpeg'))) {
+        return;
+      }
       setState(() {
         //screen will update itself
       });
@@ -43,7 +54,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   //to save the state of form
   void _saveForm() {
+    final bool isValid = _form.currentState.validate();
+    if(!isValid) return;
     _form.currentState.save();
+    Provider.of<Products>(context, listen: false).addProducts(_editedProduct);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -51,6 +66,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
+        actions: [
+          IconButton(icon: Icon(Icons.save), onPressed: () {
+            _saveForm();
+          })
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,7 +88,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
                   //when user pressed next in keyboard the focus will set to _pricedNode point
-                  Focus.of(context).requestFocus(_priceNode);
+                  FocusScope.of(context).requestFocus(_priceNode);
                 },
                 onSaved: (value) {
                   //we have to change the whole object because we have declared the class variables as final
@@ -78,6 +98,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       description: _editedProduct.description,
                       price: _editedProduct.price,
                       imageUrl: _editedProduct.imageUrl);
+                },
+                validator: (value) {
+                  if(value.isEmpty) {
+                    return 'Please enter title';
+                  }
+                  return null;
                 },
               ),
               TextFormField(
@@ -91,7 +117,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 focusNode: _priceNode,
                 keyboardType: TextInputType.number,
                 onFieldSubmitted: (_) {
-                  Focus.of(context).requestFocus(_descriptionNode);
+                  FocusScope.of(context).requestFocus(_descriptionNode);
                 },
                 onSaved: (value) {
                   //we have to change the whole object because we have declared the class variables as final
@@ -101,6 +127,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       description: _editedProduct.description,
                       price: double.parse(value),
                       imageUrl: _editedProduct.imageUrl);
+                },
+                validator: (value) {
+                  if(value.isEmpty) {
+                    return 'Please enter a value';
+                  }
+                  if(double.tryParse(value) == null) {
+                    return 'Please enter a valid value';
+                  }
+                  if(double.parse(value) <= 0) {
+                    return 'Please enter value greater than zero';
+                  }
+                  return null;
                 },
               ),
               TextFormField(
@@ -121,6 +159,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       description: value,
                       price: _editedProduct.price,
                       imageUrl: _editedProduct.imageUrl);
+                },
+                validator: (value) {
+                  if(value.isEmpty) {
+                    return 'Please enter a description';
+                  }
+                  if(value.length <= 20){
+                    return 'Please enter more than 20 characters';
+                  }
+                  return null;
                 },
               ),
               Row(
@@ -157,6 +204,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             description: _editedProduct.description,
                             price: _editedProduct.price,
                             imageUrl: value);
+                      },
+                      validator: (value) {
+                        if(value.isEmpty) {
+                          return 'Please enter a valid value';
+                        }
+                        if(!value.startsWith('http') && !value.startsWith('https')) {
+                          return 'Please enter a valid url';
+                        }
+                        if(!value.endsWith('.png') && !value.endsWith('.jpg') && !value.endsWith('.jpeg')) {
+                          return 'Please enter image with .png .jpg .jpeg';
+                        }
+                        return null;
                       },
                     ),
                   ),
