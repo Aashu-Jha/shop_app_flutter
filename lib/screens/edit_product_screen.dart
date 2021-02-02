@@ -90,19 +90,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if(_editedProduct.id != null) {
-      Provider.of<Products>(
+      await Provider.of<Products>(
           context, listen: false).updateProducts(
           _editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
     }else {
-      //ALTERNATIVE OF ASYNC OR AWAIT-
-      //example of .then() and catchError() function of Future Class
-      //then function works after only previous call are completed included catchError
-      //catch Error works to see if any error occurs
-
       try {
         await Provider.of<Products>(context, listen: false).addProducts(_editedProduct);
       } catch (e) {
@@ -118,13 +109,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   @override

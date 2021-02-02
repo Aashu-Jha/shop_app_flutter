@@ -102,11 +102,22 @@ class Products with ChangeNotifier {
     });
   }
 
-  void updateProducts(String id, Product updatedProduct) {
+  Future<void> updateProducts(String id, Product updatedProduct) async {
     final idx = _items.indexWhere((element) => element.id == id);
     if(idx >= 0) {
-      _items[idx] = updatedProduct;
-      notifyListeners();
+      final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json';
+      try {
+        await http.post(url, body: json.encode({
+                'title' : updatedProduct.title,
+                'description' : updatedProduct.description,
+                'price' : updatedProduct.price,
+                'imageUrl' : updatedProduct.imageUrl,
+              }));
+        _items[idx] = updatedProduct;
+        notifyListeners();
+      } catch (e) {
+        throw e;
+      }
     }else{
       print('Can\'t find index!!');
     }

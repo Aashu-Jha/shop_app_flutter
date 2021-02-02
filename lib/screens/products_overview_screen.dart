@@ -21,19 +21,19 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var showFavoritesOnly = false;
-  var _isLoading = false;
+  var isLoading = false;
 
   @override
   void initState() {
     setState(() {
-      _isLoading = true;
+      isLoading = true;
     });
     //To fetch data before app starts fully
     //Provider will not work without wrapping in Future class as it takes a little time.
     Future.delayed(Duration.zero).then((_) {
       Provider.of<Products>(context, listen: false).fetchAndSetProducts().then((_) {
         setState(() {
-          _isLoading = false;
+          isLoading = false;
         });
       });
     });
@@ -75,7 +75,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGrid(showFavoritesOnly),
+      body: isLoading ? Center(child: CircularProgressIndicator()) : ProductsGrid(showFavoritesOnly),
     );
   }
 }
