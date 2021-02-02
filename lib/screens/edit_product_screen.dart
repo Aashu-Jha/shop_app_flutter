@@ -82,7 +82,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   //to save the state of form
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final bool isValid = _form.currentState.validate();
     if(!isValid) return;
     _form.currentState.save();
@@ -102,28 +102,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
       //example of .then() and catchError() function of Future Class
       //then function works after only previous call are completed included catchError
       //catch Error works to see if any error occurs
-      Provider.of<Products>(
-          context, listen: false).addProducts(
-          _editedProduct).catchError((error) {
-            return showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text('Process Failed!'),
-                  content: Text('Something went wrong'),
-                  actions: [
-                    TextButton(onPressed: () {
-                      Navigator.of(ctx).pop();
-                    }, child: Text('Okay'))
-                  ],
-                ),
-            ).then((_) {
-              setState(() {
-                _isLoading = false;
-              });
-              Navigator.of(context).pop();
-            }
-            );
-      });
+
+      try {
+        await Provider.of<Products>(context, listen: false).addProducts(_editedProduct);
+      } catch (e) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Process Failed!'),
+            content: Text('Something went wrong'),
+            actions: [
+              TextButton(onPressed: () {
+                Navigator.of(ctx).pop();
+              }, child: Text('Okay'))
+            ],
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      }
     }
   }
 

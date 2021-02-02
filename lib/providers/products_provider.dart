@@ -5,38 +5,38 @@ import 'dart:convert';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
-    Product(
-      id: 'p1',
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-        id: 'p2',
-        title: 'Trousers',
-        description: 'A nice pair of trousers.',
-        price: 59.99,
-        imageUrl:
-        "https://www.rei.com/media/82e49785-ebcb-425e-9d37-c23ca3197baa"
-    ),
-    Product(
-      id: 'p3',
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-        id: 'p4',
-        title: 'Trousers',
-        description: 'A nice pair of trousers.',
-        price: 59.99,
-        imageUrl:
-        "https://www.rei.com/media/82e49785-ebcb-425e-9d37-c23ca3197baa"
-    ),
+    // Product(
+    //   id: 'p1',
+    //   title: 'Red Shirt',
+    //   description: 'A red shirt - it is pretty red!',
+    //   price: 29.99,
+    //   imageUrl:
+    //   'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+    // ),
+    // Product(
+    //     id: 'p2',
+    //     title: 'Trousers',
+    //     description: 'A nice pair of trousers.',
+    //     price: 59.99,
+    //     imageUrl:
+    //     "https://www.rei.com/media/82e49785-ebcb-425e-9d37-c23ca3197baa"
+    // ),
+    // Product(
+    //   id: 'p3',
+    //   title: 'Red Shirt',
+    //   description: 'A red shirt - it is pretty red!',
+    //   price: 29.99,
+    //   imageUrl:
+    //   'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+    // ),
+    // Product(
+    //     id: 'p4',
+    //     title: 'Trousers',
+    //     description: 'A nice pair of trousers.',
+    //     price: 59.99,
+    //     imageUrl:
+    //     "https://www.rei.com/media/82e49785-ebcb-425e-9d37-c23ca3197baa"
+    // ),
 
   ];
 
@@ -50,6 +50,30 @@ class Products with ChangeNotifier {
 
   Product findById(String id) {
     return _items.firstWhere((element) => element.id == id);
+  }
+
+  Future<void> fetchAndSetProducts() async {
+    const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json';
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((id, data) {
+        loadedProducts.add(
+          Product(
+            id: id,
+            title: data['title'],
+            description: data['description'],
+            price: data['price'],
+            imageUrl: data['imageUrl'],
+          ),
+        );
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
   }
 
   //implementation of Future class and it's methods

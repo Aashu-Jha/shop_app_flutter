@@ -7,6 +7,11 @@ import 'package:shop_app/widgets/user_product_item.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const routeName = 'user_products_screen';
+
+  Future<void> _refreshScreen(BuildContext context) async {
+    await Provider.of<Products>(context).fetchAndSetProducts();
+  }
+  
   @override
   Widget build(BuildContext context) {
     final productData = Provider.of<Products>(context);
@@ -21,20 +26,23 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal : 12.0, vertical: 6.0),
-        child: ListView.builder(
-          itemCount: productData.items.length,
-            itemBuilder: (ctx, i) => Column(
-              children: [
-                UserProductItem(
-                  title: productData.items[i].title,
-                  id: productData.items[i].id,
-                  imageUrl: productData.items[i].imageUrl,
-                ),
-                Divider(),
-              ],
-            )),
+      body: RefreshIndicator(
+        onRefresh: () => _refreshScreen(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal : 12.0, vertical: 6.0),
+          child: ListView.builder(
+            itemCount: productData.items.length,
+              itemBuilder: (ctx, i) => Column(
+                children: [
+                  UserProductItem(
+                    title: productData.items[i].title,
+                    id: productData.items[i].id,
+                    imageUrl: productData.items[i].imageUrl,
+                  ),
+                  Divider(),
+                ],
+              )),
+        ),
       ),
     );
   }
