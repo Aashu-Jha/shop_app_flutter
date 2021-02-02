@@ -52,6 +52,7 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
+  //it will request the web and then decode it with json as Map and then for each id it will re-write the entire list of items.
   Future<void> fetchAndSetProducts() async {
     const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json';
     try {
@@ -72,6 +73,7 @@ class Products with ChangeNotifier {
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
+      //error will be resolve in callback method.
       throw error;
     }
   }
@@ -107,7 +109,7 @@ class Products with ChangeNotifier {
     if(idx >= 0) {
       final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json';
       try {
-        await http.post(url, body: json.encode({
+        await http.patch(url, body: json.encode({
                 'title' : updatedProduct.title,
                 'description' : updatedProduct.description,
                 'price' : updatedProduct.price,
@@ -123,7 +125,12 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProducts(String id) {
+
+  void deleteProducts(String id)  {
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json';
+    final index = _items.indexWhere((element) => element.id == id);
+    final dProduct = _items[index];
+    http.delete(url);
     _items.removeWhere((element) => element.id == id);
     notifyListeners();
   }
