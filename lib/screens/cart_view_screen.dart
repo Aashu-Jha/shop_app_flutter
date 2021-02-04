@@ -10,6 +10,7 @@ class CartViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
+    final scaffold = ScaffoldMessenger.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -31,14 +32,11 @@ class CartViewScreen extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  Chip(label: Text('\$${cart.getTotalPrice()}',
+                  Chip(label: Text('\$${cart.getTotalPrice().toStringAsFixed(2)}',
                     style: TextStyle(color: Theme.of(context).primaryTextTheme.headline6.color,),),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  TextButton(onPressed: () {
-                    Provider.of<Orders>(context, listen: false).addOrder(cart.items.values.toList(), cart.getTotalPrice());
-                    cart.clear();
-                  }, child: Text('Order Now')),
+                  OrderButton(cart: cart, scaffold: scaffold),
                 ],
               ),
             ),
@@ -60,5 +58,46 @@ class CartViewScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.cart,
+    @required this.scaffold,
+  }) : super(key: key);
+
+  final Cart cart;
+  final ScaffoldMessengerState scaffold;
+
+  @override
+  _OrderButtonState createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        onPressed: (widget.cart.getTotalPrice() <= 0 || _isLoading == true) ? null : ()  async {
+          setState(() {
+            _isLoading = true;
+          });
+      try {
+        await Provider.of<Orders>(context, listen: false).addOrder(widget.cart.items.values.toList(), widget.cart.getTotalPrice());
+        widget.cart.clear();
+        setState(() {
+          _isLoading = false;
+        });
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        widget.scaffold.showSnackBar(SnackBar(content: Text('Deleting Failed!')));
+      }
+
+    }, child: _isLoading ? Center(child: CircularProgressIndicator(strokeWidth: 3,)) : Text('Order Now'));
   }
 }
