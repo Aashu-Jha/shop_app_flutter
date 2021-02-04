@@ -68,7 +68,7 @@ class Orders with ChangeNotifier {
                               price: item['price'])).toList(),
                       dateTime: DateTime.parse(data['dateTime'])),
                 );
-                _orders = loadedProducts;
+                _orders = loadedProducts.reversed.toList();
                 notifyListeners();
               });
       };
