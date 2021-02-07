@@ -105,11 +105,11 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  // @override
-  // void dispose() {
-  //   _passwordController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void _showErrorDialog(String error) {
     showDialog(context: context,
