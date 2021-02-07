@@ -42,9 +42,10 @@ class Products with ChangeNotifier {
   ];
 
   final String authToken;
+  final String userId;
 
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get favoriteItems {
     return _items.where((element) => element.isFavorite).toList();
@@ -60,10 +61,16 @@ class Products with ChangeNotifier {
 
   //it will request the web and then decode it with json as Map and then for each id it will re-write the entire list of items.
   Future<void> fetchAndSetProducts() async {
-    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json?auth=$authToken';
+    var url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if(extractedData == null){
+        return;
+      }
+      url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/userFavroites/$userId/products.json?auth=$authToken';
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((id, data) {
         loadedProducts.add(
@@ -73,7 +80,7 @@ class Products with ChangeNotifier {
             description: data['description'],
             price: data['price'],
             imageUrl: data['imageUrl'],
-            isFavorite: data['isFavorite'],
+            isFavorite: favoriteData == null ? false: favoriteData[id] ?? false,
           ),
         );
       });
@@ -95,7 +102,6 @@ class Products with ChangeNotifier {
           'description' : product.description,
           'price' : product.price,
           'imageUrl' : product.imageUrl,
-          'isFavorite' : false,
         }
     )).then((response) {
       final newProduct = Product(
@@ -104,7 +110,6 @@ class Products with ChangeNotifier {
           description: product.description,
           price: product.price,
           imageUrl: product.imageUrl,
-        isFavorite: false,
       );
       _items.add(newProduct);
       notifyListeners();

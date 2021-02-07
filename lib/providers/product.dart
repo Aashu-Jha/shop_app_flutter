@@ -14,14 +14,14 @@ class Product with ChangeNotifier{
       this.isFavorite = false});
 
   Future<void> toggleFavorite(String authToken, String userId) async {
-    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$userId/$id.json?auth=$authToken';
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/userFavroites/$userId/products/$id.json?auth=$authToken';
     final oldState = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     try {
-      final response = await http.put(url, body: json.encode({
+      final response = await http.put(url, body: json.encode(
         isFavorite,
-      }));
+      ));
       if(response.statusCode >= 400) {
         _setValue(oldState);
       }
