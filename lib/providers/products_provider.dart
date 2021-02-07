@@ -60,8 +60,9 @@ class Products with ChangeNotifier {
   }
 
   //it will request the web and then decode it with json as Map and then for each id it will re-write the entire list of items.
-  Future<void> fetchAndSetProducts() async {
-    var url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json?auth=$authToken';
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    String filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -102,6 +103,7 @@ class Products with ChangeNotifier {
           'description' : product.description,
           'price' : product.price,
           'imageUrl' : product.imageUrl,
+          'creatorId' : userId,
         }
     )).then((response) {
       final newProduct = Product(
