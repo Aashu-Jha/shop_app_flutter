@@ -20,25 +20,43 @@ class ProductsOverviewScreen extends StatefulWidget {
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-  var showFavoritesOnly = false;
-  var isLoading = false;
+  var _showFavoritesOnly = false;
+  var _isInit = true;
+  bool _isLoading = false;
+
+  // @override
+  // void initState() {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   //To fetch data before app starts fully
+  //   //Provider will not work without wrapping in Future class as it takes a little time.
+  //   Future.delayed(Duration.zero).then((_) {
+  //     Provider.of<Products>(context, listen: false).fetchAndSetProducts().then((_) {
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //     });
+  //   });
+  //   super.initState();
+  // }
 
   @override
-  void initState() {
-    setState(() {
-      isLoading = true;
-    });
-    //To fetch data before app starts fully
-    //Provider will not work without wrapping in Future class as it takes a little time.
-    Future.delayed(Duration.zero).then((_) {
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
       Provider.of<Products>(context, listen: false).fetchAndSetProducts().then((_) {
         setState(() {
-          isLoading = false;
+          _isLoading = false;
         });
       });
-    });
-    super.initState();
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +68,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             onSelected: (FilterOptions selected) {
               setState(() {
                 if(selected == FilterOptions.all) {
-                  showFavoritesOnly = false;
+                  _showFavoritesOnly = false;
                 }else if(selected == FilterOptions.onlyFavorites){
-                  showFavoritesOnly = true;
+                  _showFavoritesOnly = true;
                 }
               });
             },
@@ -76,7 +94,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: isLoading ? Center(child: CircularProgressIndicator()) : ProductsGrid(showFavoritesOnly),
+      body: _isLoading ? Center(child: CircularProgressIndicator()) : ProductsGrid(_showFavoritesOnly),
     );
   }
 }

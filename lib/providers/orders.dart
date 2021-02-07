@@ -16,11 +16,15 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
+  final String authToken;
+
+
+  Orders(this.authToken, this._orders);
 
   List<OrderItem> get orders => [..._orders];
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/orders.json';
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/orders.json?auth=$authToken';
     final timeStamp = DateTime.now();
     try {
       final response = await http.post(url, body: json.encode({
@@ -49,7 +53,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/orders.json';
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/orders.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -71,7 +75,7 @@ class Orders with ChangeNotifier {
                 _orders = loadedProducts.reversed.toList();
                 notifyListeners();
               });
-      };
+      }
     } catch (e) {
       throw e;
     }

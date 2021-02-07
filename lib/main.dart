@@ -32,8 +32,13 @@ class MyApp extends StatelessWidget {
             ),),
         ChangeNotifierProvider(
             create: (context) => Cart()),
-        ChangeNotifierProvider(
-            create: (context) => Orders()),
+        // ignore: missing_required_param
+        ChangeNotifierProxyProvider<Auth, Orders>(
+            update: (ctx, auth, previousOrders) => Orders(
+              auth.token,
+              previousOrders == null ? [] : previousOrders.orders,
+            )
+        ),
       ],
       child: Consumer<Auth>(builder: (ctx, auth, _) => MaterialApp(
         title: 'Flutter Demo',

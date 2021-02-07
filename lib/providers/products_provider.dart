@@ -89,7 +89,7 @@ class Products with ChangeNotifier {
   //.then() and .catchError()
   //These are alternatives of async and await
   Future<void> addProducts(Product product) {
-    const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json';
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     return http.post(url, body: json.encode(
         {'title': product.title,
           'description' : product.description,
@@ -116,7 +116,7 @@ class Products with ChangeNotifier {
   Future<void> updateProducts(String id, Product updatedProduct) async {
     final idx = _items.indexWhere((element) => element.id == id);
     if(idx >= 0) {
-      final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json';
+      final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
       try {
         await http.patch(url, body: json.encode({
                 'title' : updatedProduct.title,
@@ -136,7 +136,7 @@ class Products with ChangeNotifier {
 
 
   Future<void> deleteProducts(String id) async {
-    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json';
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
     final index = _items.indexWhere((element) => element.id == id);
     var existingProduct = _items[index];
     _items.removeAt(index);
