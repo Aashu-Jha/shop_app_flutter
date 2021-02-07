@@ -41,6 +41,11 @@ class Products with ChangeNotifier {
 
   ];
 
+  final String authToken;
+
+
+  Products(this.authToken, this._items);
+
   List<Product> get favoriteItems {
     return _items.where((element) => element.isFavorite).toList();
   }
@@ -55,7 +60,7 @@ class Products with ChangeNotifier {
 
   //it will request the web and then decode it with json as Map and then for each id it will re-write the entire list of items.
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json';
+    final url = 'https://shop-app-cc4e8-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;

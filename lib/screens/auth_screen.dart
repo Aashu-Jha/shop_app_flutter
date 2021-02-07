@@ -3,6 +3,7 @@ import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/screens/products_overview_screen.dart';
 
 enum AuthMode { SignUp, Login }
 
@@ -130,12 +131,16 @@ class _AuthCardState extends State<AuthCard> {
     });
     try {
       if (_authMode == AuthMode.Login) {
-            // Log user in
-            await Provider.of<Auth>(context, listen:  false).login(_authData['email'], _authData['password']);
-          } else {
-            // Sign user up
-            await Provider.of<Auth>(context, listen: false).signUp(_authData['email'], _authData['password']);
-          }
+        // Log user in
+        await Provider.of<Auth>(context, listen: false)
+            .login(_authData['email'], _authData['password']);
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false)
+            .signUp(_authData['email'], _authData['password']);
+      }
+      Navigator.of(context)
+          .pushReplacementNamed(ProductsOverviewScreen.routeName);
     } on HttpException catch (e) {
       var errorMessage = 'Authentication failed!';
       if(e.toString().contains('EMAIL_EXISTS')){
